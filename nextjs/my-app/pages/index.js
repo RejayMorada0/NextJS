@@ -3,7 +3,7 @@ const express = require("express");
 const mysql = require("mysql2");
 var bodyParser = require('body-parser');
 const app = express();
-const port = 3000;
+const port = 3001;
 
 
 // create the connection to database
@@ -56,6 +56,7 @@ app.post('/upload', (req, res) => {
             }
         })
 })
+
 
 app.get('/show-images', (req, res) => {
     // Select the last entry from the db

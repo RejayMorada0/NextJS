@@ -19,13 +19,17 @@ function ShowImage({ data }) {
 
 export async function getServerSideProps() {
     // Fetch data from the server
-    const response = await fetch('http://localhost:3000/show-images');
+    const response = await fetch('http://127.0.0.1:3001/show-images');
 
+
+    
     // Get the json response
     const data = await response.json();
     return {
         props: { data },
     }
+ 
+    
 }
 
 export default ShowImage
