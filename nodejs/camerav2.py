@@ -125,7 +125,7 @@ while True:
         # Data that we will send in post request.
         data = {"var_time": var_time, "file_path": file_path}
         # The POST request to our node server
-        res = requests.post('http://localhost:3000/upload', json=data)
+        res = requests.post('http://localhost:4000/upload', json=data)
         # Display the json response
         # print(res.json())
 

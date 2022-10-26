@@ -3,7 +3,8 @@ const express = require("express");
 const mysql = require("mysql2");
 var bodyParser = require('body-parser');
 const app = express();
-const port = 3000;
+const fs = require('fs');
+const port = 4000;
 
 
 // create the connection to database
@@ -42,8 +43,12 @@ app.post('/upload', (req, res) => {
     var var_time = req.body.var_time;
     var file_path = req.body.file_path;
 
+    // read file from the path from the json
+    var image = fs.readFileSync(file_path);
+    console.log(image);
+
     // save datetime, imgfile, into the db
-    connection.query(`INSERT INTO ${db_table} (datetime, filename) VALUES (?, ?);`, [var_time, file_path],
+    connection.query(`INSERT INTO ${db_table} (datetime, filename) VALUES (?, ?);`, [var_time, image],
         (err, result) => {
             try {
                 if (result.affectedRows > 0) {
@@ -57,19 +62,27 @@ app.post('/upload', (req, res) => {
         })
 })
 
-app.get('/show-images', (req, res) => {
-    // Select the last entry from the db
-    connection.query(`SELECT * FROM ${db_table} ORDER BY id DESC LIMIT 1;`,
-        (err, results) => {
+
+app.get("/display", (req, res) => {
+    console.log(req.query);
+
+    connection.query(
+        "SELECT * FROM `camerav2` ",
+        function(err, tables) {
+            console.log(tables);
+            // first check if there are results
             try {
-                if (results.length > 0) {
-                    // send a json response containg the image data (blob)
-                    res.json({ 'imgData': results[0]['filename'] });
-                } else {
-                    res.json({ message: "Something went wrong." });
+                for (let i = 0; i < tables.length; i++) {
+                    var name = `${tables[i].id} + ${tables[i].datetime} + ${tables[i].filename.toString("base64")} \n `
+                    res.write(name);
                 }
-            } catch {
-                res.json({ message: err });
+                res.end();
+
+            } catch (err) {
+                res.send(`Error: ${err}!`);
             }
-        })
-})
+
+        }
+    );
+
+});
