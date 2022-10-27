@@ -1,5 +1,5 @@
 # importing OpenCV, time and Pandas library
-import cv2, time, pandas
+import cv2, time, pandas, base64
 # importing datetime class from datetime library
 from datetime import datetime
 
@@ -21,6 +21,11 @@ df = pandas.DataFrame(columns = ["Start", "End"])
 # Capturing video
 video = cv2.VideoCapture(0)
 
+def convertToBinaryData(filename):
+    # Convert digital data to binary format
+    with open(filename, 'rb') as file:
+        imageBase64 = base64.b64encode(file.read())
+    return imageBase64.decode('utf-8')
 
 # Infinite while loop to treat stack of image as video
 while True:
@@ -122,8 +127,10 @@ while True:
         # Get the absolute path of saved image (frame)
         file_path = os.path.abspath(filename)
 
+        base64img = convertToBinaryData(file_path)
+
         # Data that we will send in post request.
-        data = {"var_time": var_time, "file_path": file_path}
+        data = {"var_time": str(var_time), "file_path": str(base64img)}
         # The POST request to our node server
         res = requests.post('http://localhost:4000/upload', json=data)
         # Display the json response

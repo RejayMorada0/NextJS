@@ -4,7 +4,7 @@ const mysql = require("mysql2");
 var bodyParser = require('body-parser');
 const app = express();
 const fs = require('fs');
-const port = 3000;
+const port = 4000;
 
 
 // create the connection to database
@@ -40,15 +40,12 @@ app.use(bodyParser.json())
 
 
 app.post('/upload', (req, res) => {
-    var var_time = req.body.var_time;
-    var file_path = req.body.file_path;
 
-    // read file from the path from the json
-    var image = fs.readFileSync(file_path);
-    console.log(image);
+
+    var { var_time, file_path } = req.body;
 
     // save datetime, imgfile, into the db
-    connection.query(`INSERT INTO ${db_table} (datetime, filename) VALUES (?, ?);`, [var_time, image],
+    connection.query(`INSERT INTO ${db_table} (datetime, filename) VALUES (?, ?);`, [var_time, file_path],
         (err, result) => {
             try {
                 if (result.affectedRows > 0) {
@@ -63,26 +60,19 @@ app.post('/upload', (req, res) => {
 })
 
 
-app.get("/display", (req, res) => {
-    console.log(req.query);
-
-    connection.query(
-        "SELECT * FROM `camerav2` ",
-        function(err, tables) {
-            console.log(tables);
-            // first check if there are results
+app.get('/display', (req, res) => {
+    // Select the last entry from the db
+    connection.query(`SELECT * FROM ${db_table} ORDER BY id DESC LIMIT 1;`,
+        (err, results) => {
             try {
-                for (let i = 0; i < tables.length; i++) {
-                    var name = `${tables[i].id} + ${tables[i].datetime} + ${tables[i].filename.toString("base64")} \n `
-                    res.write(name);
+                if (results.length > 0) {
+                    // send a json response containg the image data (blob)
+                    res.json({ 'imgData': results[0]['filename'] });
+                } else {
+                    res.json({ message: "Something went wrong." });
                 }
-                res.end();
-
-            } catch (err) {
-                res.send(`Error: ${err}!`);
+            } catch {
+                res.json({ message: err });
             }
-
-        }
-    );
-
-});
+        })
+})

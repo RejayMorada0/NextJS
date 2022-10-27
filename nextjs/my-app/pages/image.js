@@ -19,10 +19,8 @@ function ShowImage({ data }) {
 
 export async function getServerSideProps() {
     // Fetch data from the server
-    const response = await fetch('http://127.0.0.1:3001/show-images');
+    const response = await fetch('http://127.0.0.1:4000/display');
 
-
-    
     // Get the json response
     const data = await response.json();
     return {
