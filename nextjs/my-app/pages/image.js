@@ -1,5 +1,9 @@
+import Head from 'next/head'
+import Image from 'next/image'
+import styles from '../styles/Home.module.css'
 
-function ShowImage({ data }) {
+
+function Home({ data }) {
     // Get the image data
     const image = data.imgData.data;
 
@@ -11,8 +15,20 @@ function ShowImage({ data }) {
     
     // Render into HTML
     return (
-        <div>
-            <img src={imgSrc} />
+        <div className={styles.container}>
+            
+            <Head>
+                <title>My First NextJS App</title>
+            </Head>
+            
+            <main className={styles.main}>
+                <div className={styles.grid}>
+                    <h2>Last Image Display Here: &rarr;</h2>
+                    <img src={imgSrc} />
+                </div>
+                
+            </main>
+            
         </div>
     )
 }
@@ -30,4 +46,4 @@ export async function getServerSideProps() {
     
 }
 
-export default ShowImage
+export default Home
